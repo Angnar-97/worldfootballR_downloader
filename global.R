@@ -13,6 +13,7 @@ library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
 library(shinyWidgets)
+library(shinyalert)
 library(shinymeta)
 library(fresh)
 

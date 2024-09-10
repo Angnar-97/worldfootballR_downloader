@@ -55,7 +55,7 @@ ui <- dashboardPage(
       menuItem(
         "Understat Data",
         tabName = "understat", 
-        icon = icon("biohazard", lib = "font-awesome"),
+        icon = icon("snowflake", lib = "font-awesome"),
         selected = TRUE,
         menuSubItem(
           "Player Stats", 
@@ -77,18 +77,19 @@ ui <- dashboardPage(
         menuSubItem(
           "International Matches",
           tabName = "international",
-          icon = icon("old-republic", lib = "font-awesome")
+          icon = icon("jedi", lib = "font-awesome")
         ),
         menuSubItem(
           "Preloaded Data",
           tabName = "preloaded",
           icon = icon("shield-halved", lib = "font-awesome")
-        ),
-        menuSubItem(
-          "Creator",
-          tabName = "creator",
-          icon = icon("hat-wizard", lib = "font-awesome")
         )
+      ),
+      
+      menuItem(
+        "Creator",
+        tabName = "creator",
+        icon = icon("hat-wizard", lib = "font-awesome")
       )
       
     )
@@ -105,281 +106,221 @@ ui <- dashboardPage(
       # Tab for Fbref Player Stats
       tabItem(
         tabName = "fbref_player",
-              
-        fluidRow(
-          box(
-            title = "Player Stats Input", 
-            width = 5, 
-            status = "primary",
-            solidHeader = TRUE,
-            textInput(
-              "player_url", 
-              "Player URL",
-              value = "https://fbref.com/en/jugadores/36a3ff67/Marco-Reus"
+        
+        tabBox(id = "tabset1", width = 12,
+          tabPanel(
+            "Player Data", 
+            fluidRow(
+              box(
+                title = "Player Stats Input", 
+                width = 5, 
+                status = "primary",
+                solidHeader = TRUE,
+                textInput(
+                  "player_url", 
+                  "Player URL",
+                  value = "https://fbref.com/en/jugadores/36a3ff67/Marco-Reus"
+                ),
+                selectInput(
+                  "stat_type",
+                  "Statistic Type",
+                  choices = c(
+                    "standard", "shooting", "passing", "passing_types", 
+                    "gca", "defense", "possession", "playing_time", 
+                    "misc", "keeper", "keeper_adv"
+                  ), 
+                  selected = 'standard'
+                ),
+                actionButton(
+                  "download_player_stats",
+                  "Download Player Stats", 
+                  icon = icon("cloud-download")
+                )
+              )
             ),
-            selectInput(
-              "stat_type",
-              "Statistic Type",
-              choices = c(
-                "standard", "shooting", "passing", "passing_types", 
-                "gca", "defense", "possession", "playing_time", 
-                "misc", "keeper", "keeper_adv"
-                ), 
-              selected = 'standard'
-            ),
-            actionButton(
-              "download_player_stats",
-              "Download Player Stats", 
-              icon = icon("cloud-download")
+            fluidRow(
+              box(
+                title = "Player Stats Output Table", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                DT::dataTableOutput("player_stats_table"),
+                downloadButton(
+                  "download_player_csv",
+                  "Download as CSV",
+                  icon = icon("file-csv", lib = "font-awesome")
+                ),
+                downloadButton(
+                  "download_player_xlsx",
+                  "Download as XLSX",
+                  icon = icon("file-excel", lib = "font-awesome")
+                )
+              )
             )
-          )
-        ),
-        fluidRow(
-          box(
-            title = "Player Stats Output", 
-            width = 12,
-            status = "primary",
-            solidHeader = TRUE,
-            DT::dataTableOutput("player_stats_table"),
-            downloadButton(
-              "download_player_csv",
-              "Download as CSV",
-              icon = icon("file-csv", lib = "font-awesome")
-            ),
-            downloadButton(
-              "download_player_xlsx",
-              "Download as XLSX",
-              icon = icon("file-excel", lib = "font-awesome")
+          ),
+          tabPanel(
+            "Summary",
+            fluidRow(
+              box(
+                title = "Player Stats Output Summary", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                verbatimTextOutput("skim_player_stats_table")
+              )
             )
           )
         )
+        
       ),
       
       # Tab for Fbref Team Match Results
       tabItem(
         tabName = "fbref_matches",
-              
-        fluidRow(
-          box(
-            title = "Team Match Results Input",
-            width = 5, status = "primary",
-            solidHeader = TRUE,
-            textInput(
-              "team_league", 
-              "League Name:", 
-              value = "EPL"
-            ),
-            textInput(
-              "team_season",
-              "Season (e.g., 2022/2023):",
-              value = "2022/2023"
-            ),
-            actionButton(
-              "download_team_results", 
-              "Download Team Results", 
-              icon = icon("fire-flame-curved")
-            )
-          )
-        ),
-        fluidRow(
-          box(
-            title = "Team Match Results Output",
-            width = 12,
-            status = "primary",
-            solidHeader = TRUE,
-            DT::dataTableOutput("team_results_table"),
-            downloadButton(
-              "download_team_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            ),
-            downloadButton(
-              "download_team_xlsx",
-              "Download as XLSX",
-              icon = icon("file-excel", lib = "font-awesome")
+        
+        tabBox(
+          id = "tabset1", width = 12,
+          tabPanel(
+                 "Matches Data",
+                 fluidRow(
+                   box(
+                     title = "Team Match Results Input",
+                     width = 5, status = "primary",
+                     solidHeader = TRUE,
+                     # Input to select country
+                     selectInput(
+                        "fbref_country",
+                        "Select Country",
+                        choices = c(
+                          "England" = "ENG",
+                          "Italy" = "ITA", 
+                          "Spain" = "ESP", 
+                          "Germany" = "GER", 
+                          "France" = "FRA"
+                        ),
+                        selected = "ENG" # , multiple = TRUE
+                      ),
+                      
+                      # Input to select gender
+                      selectInput(
+                        "fbref_gender",
+                        "Select Gender",
+                        choices = c(
+                          "Men's" = "M", 
+                          "Women's" = "F"
+                          ),
+                        selected = "M"
+                      ),
+                      # Input to select the season
+                      selectInput(
+                        "fbref_season_end_year",
+                        "Select Season(s)",
+                        choices = c(
+                          2012, 2013, 2014, 2015, 2016, 2017,
+                          2018, 2019, 2020, 2021, 2022, 2023
+                          ),
+                        selected = 2022 # , multiple = TRUE
+                      ),
+                      
+                      # Input to select division 
+                      selectInput(
+                        "fbref_tier",
+                        "Select Division",
+                        choices = c("1st", "2nd", "3rd", "4th"),
+                        selected = "1st"
+                      ),
+                      actionButton(
+                        "fbref_download_team_results", 
+                        "Download Team Results", 
+                        icon = icon("fire-flame-curved")
+                      )
+                    )
+                ),
+                fluidRow(
+                  box(
+                    title = "Team Match Results Output",
+                    width = 12,
+                    status = "primary",
+                    solidHeader = TRUE,
+                    DT::dataTableOutput("fbref_team_results_table"),
+                    downloadButton(
+                      "fbref_download_team_csv",
+                      "Download as CSV", 
+                      icon = icon("file-csv")
+                    ),
+                    downloadButton(
+                      "fbref_download_team_xlsx",
+                      "Download as XLSX",
+                      icon = icon("file-excel", lib = "font-awesome")
+                    )
+                  )
+                )
+              ),
+          
+        tabPanel(
+          "Summary",
+          fluidRow(
+            box(
+              title = "Player Stats Output Summary", 
+              width = 12,
+              status = "primary",
+              solidHeader = TRUE,
+              verbatimTextOutput("skim_matches_stats_table")
+              )
             )
           )
         )
       ),
+      
+      
       
       # Tab for Transfermarkt Player Stats
       tabItem(
-        tabName = "transfermarkt_player", 
-        fluidRow(
-          box(
-            title = "Player Stats Input", 
-            width = 4, status = "primary",
-            solidHeader = TRUE,
-            textInput(
-              "player_url_transfermarkt", 
-              "Player URL",
-              value = "https://fbref.com/en/jugadores/36a3ff67/Marco-Reus"
-            ),
-            selectInput(
-              "stat_type",
-              "Statistic Type",
-              choices = c(
-                "standard", "shooting", "passing", "passing_types", 
-                "gca", "defense", "possession", "playing_time", 
-                "misc", "keeper", "keeper_adv"
-                ),
-              selected = 'standard'
-            ),
-            actionButton(
-              "download_player_stats",
-              "Download Player Stats", 
-              icon = icon("qrcode")
-            )
-          )
+        tabName = "transfermarkt_player",
+        
+        tabBox(id = "tabset1_tf", width = 12,
+               tabPanel(
+                 "Player Data", 
+                 fluidRow(
+                   box(
+                     title = "Player Bios Input", 
+                     width = 5, 
+                     status = "primary",
+                     solidHeader = TRUE,
+                     textInput(
+                       "player_url_transfermarkt", 
+                       "Player URL",
+                       value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
+                     ),
+                     actionButton(
+                       "download_player_bios_transfermarkt",
+                       "Download Player Bios", 
+                       icon = icon("cloud-download")
+                     )
+                   )
+                 ),
+                 fluidRow(
+                   uiOutput("player_info")
+                 )
+               )
+               # , tabPanel(
+               #   "Summary",
+               #   fluidRow(
+               #     box(
+               #       title = "Player Stats Output Summary", 
+               #       width = 12,
+               #       status = "primary",
+               #       solidHeader = TRUE,
+               #       verbatimTextOutput("skim_player_stats_table")
+               #     )
+               #   )
+               # )
         )
-      ),
-      # Tab for Transfermarkt Matches Results
-      tabItem(
-        tabName = "transfermarkt_matches", 
-        fluidRow(
-          box(
-            title = "Team Match Results Input",
-            width = 4,
-            status = "primary",
-            solidHeader = TRUE,
-            textInput("team_league", "League Name:", value = "EPL"),
-            textInput("team_season", "Season (e.g., 2022/2023):", value = "2022/2023"),
-            actionButton(
-              "download_team_results", 
-              "Download Team Results", 
-              icon = icon("download")
-            )
-          ),
-          box(
-            title = "Team Match Results Output",
-            width = 8, status = "primary",
-            solidHeader = TRUE,
-            DT::dataTableOutput("team_results_table"),
-            downloadButton(
-              "download_team_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            )
-          )
-        )      
+        
       ),
       
-      # Tab for Understat Player Stats
-      tabItem(tabName = "understat_player", 
-              fluidRow(
-                box(
-                  title = "Player Stats Input", 
-                  width = 4, status = "primary",
-                  solidHeader = TRUE,
-                  textInput(
-                    "player_url", 
-                    "Player URL",
-                    value = "https://fbref.com/en/jugadores/36a3ff67/Marco-Reus"
-                  ),
-                  selectInput(
-                    "stat_type",
-                    "Statistic Type",
-                    choices = c(
-                      "standard", "shooting", "passing", "passing_types", 
-                      "gca", "defense", "possession", "playing_time", 
-                      "misc", "keeper", "keeper_adv"), selected = 'standard'
-                  ),
-                  actionButton(
-                    "download_player_stats",
-                    "Download Player Stats", 
-                    icon = icon("download")
-                  )
-                )
-              )
-      ),
-      
-      # Tab for Understat Matches Results
-      tabItem(
-        tabName = "transfermarkt_matches", 
-        fluidRow(
-          box(
-            title = "Team Match Results Input",
-            width = 4, status = "primary",
-            solidHeader = TRUE,
-            textInput("team_league", "League Name:", value = "EPL"),
-            textInput("team_season", "Season (e.g., 2022/2023):", value = "2022/2023"),
-            actionButton(
-              "download_team_results", 
-              "Download Team Results", 
-              icon = icon("download")
-            )
-          ),
-          box(
-            title = "Team Match Results Output",
-            width = 8, status = "primary",
-            solidHeader = TRUE,
-            DT::dataTableOutput("team_results_table"),
-            downloadButton(
-              "download_team_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            )
-          )
-        )      
-      ),
-      
-      # Tab for International Matches Results
-      tabItem(tabName = "international", 
-              fluidRow(
-                box(
-                  title = "Player Stats Input", 
-                  width = 4, status = "primary",
-                  solidHeader = TRUE,
-                  textInput(
-                    "player_url", 
-                    "Player URL",
-                    value = "https://fbref.com/en/jugadores/36a3ff67/Marco-Reus"
-                  ),
-                  selectInput(
-                    "stat_type",
-                    "Statistic Type",
-                    choices = c(
-                      "standard", "shooting", "passing", "passing_types", 
-                      "gca", "defense", "possession", "playing_time", 
-                      "misc", "keeper", "keeper_adv"), selected = 'standard'
-                  ),
-                  actionButton(
-                    "download_player_stats",
-                    "Download Player Stats", 
-                    icon = icon("download")
-                  )
-                )
-              )
-      ),
-      tabItem(
-        tabName = "preloaded", 
-        fluidRow(
-          box(
-            title = "Team Match Results Input",
-            width = 4, status = "primary",
-            solidHeader = TRUE,
-            textInput("team_league", "League Name:", value = "EPL"),
-            textInput("team_season", "Season (e.g., 2022/2023):", value = "2022/2023"),
-            actionButton(
-              "download_team_results", 
-              "Download Team Results", 
-              icon = icon("download")
-            )
-          ),
-          box(
-            title = "Team Match Results Output",
-            width = 8, status = "primary",
-            solidHeader = TRUE,
-            DT::dataTableOutput("team_results_table"),
-            downloadButton(
-              "download_team_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            )
-          )
-        )      
-      ),
-      
+
+      # CREATOR
       tabItem(
         tabName = "creator",
         fluidRow(
@@ -402,7 +343,7 @@ ui <- dashboardPage(
             status = "danger",
             solidHeader = TRUE,
             collapsible = TRUE,
-            p(tags$a(href = "https://twitter.com/tu_usuario", target = "_blank", 
+            p(tags$a(href = "https://twitter.com/angnar7", target = "_blank", 
                      icon("twitter"), " Twitter")),
             p(tags$a(href = "https://www.linkedin.com/in/tu_usuario", target = "_blank", 
                      icon("linkedin"), " LinkedIn")),
