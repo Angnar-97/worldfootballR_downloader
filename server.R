@@ -79,7 +79,8 @@ server <- function(input, output, session) {
           gender = input$fbref_gender, 
           tier = input$fbref_tier
         )
-        print(results)
+        
+        # print(results)
         
         if (is.null(results) || nrow(results) == 0) {
           shinyalert(
@@ -244,6 +245,74 @@ server <- function(input, output, session) {
       write.xlsx(player_bios_transfermarkt(), file, row.names = FALSE)
     }
   )
+  
+  
+  # Reactive expression to store match-day data
+  matchday_transfermarkt <- eventReactive(input$download_matchday_transfermarkt, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      tryCatch({
+        results <- worldfootballR::tm_matchday_table(
+          country_name=input$transfermarkt_country,
+          start_year=input$transfermarkt_season_end_year,
+          matchday=input$transfermarkt_week
+        )
+        
+        # print(results)
+        
+        if (is.null(results) || nrow(results) == 0) {
+          shinyalert(
+            title = "No Results Found",
+            text = "The function did not return any match results. Please check your inputs and try again",
+            type = "warning"
+          )
+          return(NULL)
+        }
+        
+        return(results)
+        
+      }, error = function(e) {
+        shinyalert(
+          title = "Error",
+          text = paste("An error occurred while fetching the match results:", e$message),
+          type = "error"
+        )
+        return(NULL)
+      })
+    })
+  })
+  
+  
+  # Render the team match results table
+  output$transfermarkt_matchday_results_table <- renderDT({
+    req(matchday_transfermarkt())
+    if (is.null(data)) {
+      print("No data to render in fbref_team_results_table")
+      return(NULL)
+    }
+    datatable(matchday_transfermarkt(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download team match results data as CSV
+  output$transfermarkt_download_team_csv <- downloadHandler(
+    filename = function() {
+      paste("matches_results_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(matchday_transfermarkt(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download team match results data as XLSX
+  output$transfermarkt_download_team_xlsx <- downloadHandler(
+    filename = function() {
+      paste("matches_results_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(matchday_transfermarkt(), file, row.names = FALSE)
+    }
+  )
+  
   
   
 }

@@ -103,6 +103,8 @@ ui <- dashboardPage(
     
     tabItems(
       
+      # ------- TAB FBREF -------
+      
       # Tab for Fbref Player Stats
       tabItem(
         tabName = "fbref_player",
@@ -221,7 +223,6 @@ ui <- dashboardPage(
                           ),
                         selected = 2022 # , multiple = TRUE
                       ),
-                      
                       # Input to select division 
                       selectInput(
                         "fbref_tier",
@@ -273,6 +274,7 @@ ui <- dashboardPage(
       ),
       
       
+      # ------- TAB TRANSFERMARKT -------
       
       # Tab for Transfermarkt Player Stats
       tabItem(
@@ -280,7 +282,7 @@ ui <- dashboardPage(
         
         tabBox(id = "tabset1_tf", width = 12,
                tabPanel(
-                 "Player Data", 
+                 "Player Bios", 
                  fluidRow(
                    box(
                      title = "Player Bios Input", 
@@ -302,25 +304,106 @@ ui <- dashboardPage(
                  fluidRow(
                    uiOutput("player_info")
                  )
-               )
-               # , tabPanel(
-               #   "Summary",
+               ),
+               # tabPanel(
+               #   "Player Injury History", 
                #   fluidRow(
                #     box(
-               #       title = "Player Stats Output Summary", 
-               #       width = 12,
+               #       title = "Player Injury History", 
+               #       width = 5, 
                #       status = "primary",
                #       solidHeader = TRUE,
-               #       verbatimTextOutput("skim_player_stats_table")
+               #       textInput(
+               #         "player_url_inj_transfermarkt", 
+               #         "Player URL",
+               #         value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
+               #       ),
+               #       actionButton(
+               #         "download_player_inj_transfermarkt",
+               #         "Download Player Injury History", 
+               #         icon = icon("cloud-download")
+               #       )
                #     )
+               #   ),
+               #   fluidRow(
+               #     uiOutput("player_inj")
                #   )
                # )
         )
         
       ),
       
+      # Tab for Transfermarkt Player Matches
+      tabItem(
+        tabName = "transfermarkt_matches", 
+        fluidRow(
+          box(
+            title = "Team Match Results Input",
+            width = 6,
+            status = "primary",
+            solidHeader = TRUE,
+            # Input to select country
+            selectInput(
+              "transfermarkt_country",
+              "Select Country",
+              choices = c(
+                "England",
+                "Italy", 
+                "Spain", 
+                "Germany", 
+                "France"
+              ),
+              selected = "ENG"
+            ),
+            # Input to select the season
+            selectInput(
+              "transfermarkt_season_end_year",
+              "Select Season",
+              choices = c(
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023, 2024
+              ),
+              selected = 2022 
+            ),
+            selectInput(
+              "transfermarkt_week",
+              "Select Matchweek number(s)",
+              choices = c(
+                1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
+                20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
+                36,37,38
+              ),
+              selected = 1, multiple = TRUE 
+            ),
+            actionButton(
+              "download_matchday_transfermarkt", 
+              "Download Team Results", 
+              icon = icon("download")
+            )
+          )
+        ),
+        fluidRow(
+          box(
+            title = "Match-Day Results Output",
+            width = 12, status = "primary",
+            solidHeader = TRUE,
+            DT::dataTableOutput("transfermarkt_matchday_results_table"),
+            downloadButton(
+              "transfermarkt_download_team_csv",
+              "Download as CSV", 
+              icon = icon("file-csv")
+            ),
+            downloadButton(
+              "transfermarkt_download_team_xlsx",
+              "Download as XLSX",
+              icon = icon("file-excel", lib = "font-awesome")
+            )
+          )
+        )
+      ),
+      
 
-      # CREATOR
+      # ------- TAB CREATOR -------
       tabItem(
         tabName = "creator",
         fluidRow(
