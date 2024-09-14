@@ -80,7 +80,7 @@ ui <- dashboardPage(
           icon = icon("jedi", lib = "font-awesome")
         ),
         menuSubItem(
-          "Preloaded Data",
+          "International Reports",
           tabName = "preloaded",
           icon = icon("shield-halved", lib = "font-awesome")
         )
@@ -181,7 +181,7 @@ ui <- dashboardPage(
         tabName = "fbref_matches",
         
         tabBox(
-          id = "tabset1", width = 12,
+          id = "tabset2", width = 12,
           tabPanel(
                  "Matches Data",
                  fluidRow(
@@ -280,7 +280,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "transfermarkt_player",
         
-        tabBox(id = "tabset1_tf", width = 12,
+        tabBox(id = "tabset3", width = 12,
                tabPanel(
                  "Player Bios", 
                  fluidRow(
@@ -353,7 +353,7 @@ ui <- dashboardPage(
                 "Germany", 
                 "France"
               ),
-              selected = "ENG"
+              selected = "England"
             ),
             # Input to select the season
             selectInput(
@@ -361,7 +361,8 @@ ui <- dashboardPage(
               "Select Season",
               choices = c(
                 2012, 2013, 2014, 2015, 2016, 2017,
-                2018, 2019, 2020, 2021, 2022, 2023, 2024
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024
               ),
               selected = 2022 
             ),
@@ -378,7 +379,7 @@ ui <- dashboardPage(
             actionButton(
               "download_matchday_transfermarkt", 
               "Download Team Results", 
-              icon = icon("download")
+              icon = icon("fire-flame-curved")
             )
           )
         ),
@@ -395,6 +396,130 @@ ui <- dashboardPage(
             ),
             downloadButton(
               "transfermarkt_download_team_xlsx",
+              "Download as XLSX",
+              icon = icon("file-excel", lib = "font-awesome")
+            )
+          )
+        )
+      ),
+      
+      # ------ TAB UNDERSTAT -------
+      
+      # Tab for Understat Squad Stats
+      tabItem(
+        tabName = "understat_player",
+        tabBox(
+          id = "tabset4", width = 12,
+          tabPanel(
+            "Squad Data", 
+            fluidRow(
+              box(
+                title = "Squad Stats Input", 
+                width = 5, 
+                status = "primary",
+                solidHeader = TRUE,
+                textInput(
+                  "squad_undertsat_url", 
+                  "Squad URL",
+                  value = "https://understat.com/team/Borussia_Dortmund/2014"
+                ),
+                actionButton(
+                  "download_squad_undertsat_stats",
+                  "Download Squad Stats", 
+                  icon = icon("cloud-download")
+                )
+              )
+            ),
+            fluidRow(
+              box(
+                title = "Squad Output Table", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                DT::dataTableOutput("squad_undertsat_table"),
+                downloadButton(
+                  "download_squad_undertsat_csv",
+                  "Download as CSV",
+                  icon = icon("file-csv", lib = "font-awesome")
+                ),
+                downloadButton(
+                  "download_squad_undertsat_xlsx",
+                  "Download as XLSX",
+                  icon = icon("file-excel", lib = "font-awesome")
+                )
+              )
+            )
+          ),
+          tabPanel(
+            "Summary",
+            fluidRow(
+              box(
+                title = "Player Squad Output Summary", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                verbatimTextOutput("skim_squad_understat_table")
+              )
+            )
+          )
+        )
+      ),
+      
+      
+      # Tab for Understat Matches Results
+      tabItem(
+        tabName = "understat_matches", 
+        fluidRow(
+          box(
+            title = "Team Match Results Input",
+            width = 4, 
+            status = "primary",
+            solidHeader = TRUE,
+            selectInput(
+              "understat_country",
+              "Select Country",
+              choices = c(
+                "England" = "EPL",
+                "Italy" = "Serie A", 
+                "Spain" = "La liga", 
+                "Germany" = "Bundesliga", 
+                "France" = "Ligue 1",
+                "Russia" = "RFPL"
+              ),
+              selected = "England" # , multiple = TRUE
+            ),
+            # Input to select the season
+            selectInput(
+              "understat_season_start_year",
+              "Select Season",
+              choices = c(
+                2012, 2013, 2014, 2015, 2016, 2017,
+                2018, 2019, 2020, 2021, 2022, 2023,
+                2024
+              ),
+              selected = 2022 
+            ),
+            actionButton(
+              "download_understat_team_results", 
+              "Download Team Results", 
+              icon = icon("fire-flame-curved")
+            )
+          )
+        ),
+        fluidRow(
+          box(
+            title = "Team Match Results Output",
+            width = 12, 
+            status = "primary",
+            solidHeader = TRUE,
+            DT::dataTableOutput("understat_team_results_table"),
+            downloadButton(
+              "download_understat_team_csv",
+              "Download as CSV", 
+              icon = icon("file-csv")
+            ),
+            downloadButton(
+              "download_understat_team_xlsx",
               "Download as XLSX",
               icon = icon("file-excel", lib = "font-awesome")
             )
@@ -426,12 +551,24 @@ ui <- dashboardPage(
             status = "danger",
             solidHeader = TRUE,
             collapsible = TRUE,
-            p(tags$a(href = "https://twitter.com/angnar7", target = "_blank", 
-                     icon("twitter"), " Twitter")),
-            p(tags$a(href = "https://www.linkedin.com/in/tu_usuario", target = "_blank", 
-                     icon("linkedin"), " LinkedIn")),
-            p(tags$a(href = "https://github.com/tu_usuario", target = "_blank", 
-                     icon("github"), " GitHub"))
+            p(
+              tags$a(
+                href = "https://twitter.com/angnar7", 
+                icon("twitter"), " Twitter"
+                )
+              ),
+            p(
+              tags$a(
+                href = "https://https://www.linkedin.com/in/alexngs1997/", 
+                icon("linkedin"), " LinkedIn"
+                )
+            ),
+            p(
+              tags$a(
+              href = "https://github.com/Weimar45", 
+              icon("github"), " GitHub"
+              )
+            )
           )
         )
       )

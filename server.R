@@ -67,7 +67,6 @@ server <- function(input, output, session) {
   })
     
     
-    
   # Reactive expression to store team match results data
   team_results_data <- eventReactive(input$fbref_download_team_results, {
     cat("Button was pressed. Starting to fetch data...\n")
@@ -310,6 +309,138 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       write.xlsx(matchday_transfermarkt(), file, row.names = FALSE)
+    }
+  )
+  
+  
+  # -------- UNDERSTAT ---------------
+  # Reactive expression to store player stats data
+  squad_undertsat_stats_data <- eventReactive(input$download_squad_undertsat_stats, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      # Validate if the URL provided is valid
+      valid_url <- tryCatch({
+        httr::GET(input$squad_undertsat_url)
+        TRUE  # If the URL is valid
+      }, error = function(e) {
+        FALSE  # If error occurs, the URL is invalid
+      })
+      
+      if (!valid_url) {
+        shinyalert(
+          title = "Invalid URL",
+          text = "The provided URL is not valid. Please check the URL and try again.",
+          type = "error"
+        )
+        return(NULL)
+      }
+      
+      worldfootballR::understat_team_players_stats(
+        team_url = input$squad_undertsat_url
+      )
+      
+    })
+  })
+  
+  # Render the player stats data table
+  output$squad_undertsat_table <- renderDT({
+    req(squad_undertsat_stats_data())
+    datatable(squad_undertsat_stats_data(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download player stats data as CSV
+  output$download_squad_undertsat_csv <- downloadHandler(
+    filename = function() {
+      paste("squad_stats_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(squad_undertsat_stats_data(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download player stats data as XLSX
+  output$download_squad_undertsat_xlsx <- downloadHandler(
+    filename = function() {
+      paste("squad_stats_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(squad_undertsat_stats_data(), file, row.names = FALSE)
+    }
+  )
+  
+  # Generate skimr summary and return it as a table
+  output$skim_squad_understat_table <- renderPrint({
+    data <- squad_undertsat_stats_data()
+    if (!is.null(data)) {
+      skimr::skim(data)
+    } else {
+      "No data available."
+    }
+  })
+  
+  
+  # Reactive expression to store match-day data
+  understat_team_results <- eventReactive(input$download_understat_team_results, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      tryCatch({
+        results <- worldfootballR::understat_league_match_results(
+          league=input$understat_country,
+          season_start_year=input$understat_season_start_year
+        )
+        
+        # print(results)
+        
+        if (is.null(results) || nrow(results) == 0) {
+          shinyalert(
+            title = "No Results Found",
+            text = "The function did not return any match results. Please check your inputs and try again",
+            type = "warning"
+          )
+          return(NULL)
+        }
+        
+        return(results)
+        
+      }, error = function(e) {
+        shinyalert(
+          title = "Error",
+          text = paste("An error occurred while fetching the match results:", e$message),
+          type = "error"
+        )
+        return(NULL)
+      })
+    })
+  })
+  
+  
+  # Render the team match results table
+  output$understat_team_results_table <- renderDT({
+    req(understat_team_results())
+    if (is.null(data)) {
+      print("No data to render in fbref_team_results_table")
+      return(NULL)
+    }
+    datatable(understat_team_results(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download team match results data as CSV
+  output$download_understat_team_csv <- downloadHandler(
+    filename = function() {
+      paste("matches_results_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(understat_team_results(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download team match results data as XLSX
+  output$download_understat_team_xlsx <- downloadHandler(
+    filename = function() {
+      paste("matches_results_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(understat_team_results(), file, row.names = FALSE)
     }
   )
   
