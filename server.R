@@ -314,6 +314,7 @@ server <- function(input, output, session) {
   
   
   # -------- UNDERSTAT ---------------
+  
   # Reactive expression to store player stats data
   squad_undertsat_stats_data <- eventReactive(input$download_squad_undertsat_stats, {
     cat("Button was pressed. Starting to fetch data...\n")
@@ -444,6 +445,143 @@ server <- function(input, output, session) {
     }
   )
   
+  # -------- INTERNATIONAL ---------------
   
+  # Reactive expression to store World Cup data
+  wc_results <- eventReactive(input$download_wc_results, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      tryCatch({
+        results <- worldfootballR::fb_match_results(
+          country = "",
+          gender = "M",
+          season_end_year = input$wc_year, 
+          tier = "", 
+          non_dom_league_url = "https://fbref.com/en/comps/1/history/World-Cup-Seasons"
+        )
+        
+        # print(results)
+        
+        if (is.null(results) || nrow(results) == 0) {
+          shinyalert(
+            title = "No Results Found",
+            text = "The function did not return any match results. Please check your inputs and try again",
+            type = "warning"
+          )
+          return(NULL)
+        }
+        
+        return(results)
+        
+      }, error = function(e) {
+        shinyalert(
+          title = "Error",
+          text = paste("An error occurred while fetching the match results:", e$message),
+          type = "error"
+        )
+        return(NULL)
+      })
+    })
+  })
+  
+  
+  # Render the team match results table
+  output$wc_results_table <- renderDT({
+    req(wc_results())
+    if (is.null(data)) {
+      print("No data to render in fbref_team_results_table")
+      return(NULL)
+    }
+    datatable(wc_results(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download team match results data as CSV
+  output$download_wc_csv <- downloadHandler(
+    filename = function() {
+      paste("world_cup_results_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(wc_results(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download team match results data as XLSX
+  output$download_wc_xlsx <- downloadHandler(
+    filename = function() {
+      paste("world_cup_results_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(wc_results(), file, row.names = FALSE)
+    }
+  )
+  
+  
+  # Reactive expression to store Euro match data
+  euro_results <- eventReactive(input$download_euro_results, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      tryCatch({
+        results <- worldfootballR::fb_match_results(
+          country = "",
+          gender = "M",
+          season_end_year = input$euro_year, 
+          tier = "", 
+          non_dom_league_url = "https://fbref.com/en/comps/676/history/UEFA-Euro-Seasons"
+        )
+        
+        # print(results)
+        
+        if (is.null(results) || nrow(results) == 0) {
+          shinyalert(
+            title = "No Results Found",
+            text = "The function did not return any match results. Please check your inputs and try again",
+            type = "warning"
+          )
+          return(NULL)
+        }
+        
+        return(results)
+        
+      }, error = function(e) {
+        shinyalert(
+          title = "Error",
+          text = paste("An error occurred while fetching the match results:", e$message),
+          type = "error"
+        )
+        return(NULL)
+      })
+    })
+  })
+  
+  
+  # Render the team match results table
+  output$euro_results_table <- renderDT({
+    req(euro_results())
+    if (is.null(data)) {
+      print("No data to render in fbref_team_results_table")
+      return(NULL)
+    }
+    datatable(euro_results(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download team match results data as CSV
+  output$download_euro_csv <- downloadHandler(
+    filename = function() {
+      paste("euro_results_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(euro_results(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download team match results data as XLSX
+  output$download_euro_xlsx <- downloadHandler(
+    filename = function() {
+      paste("euro_results_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(euro_results(), file, row.names = FALSE)
+    }
+  )
   
 }
