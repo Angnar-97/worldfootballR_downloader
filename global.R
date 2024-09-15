@@ -11,6 +11,7 @@ library(worldfootballR)
 
 library(shiny)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(shinycssloaders)
 library(shinyWidgets)
 library(shinyalert)

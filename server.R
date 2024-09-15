@@ -445,6 +445,16 @@ server <- function(input, output, session) {
     }
   )
   
+  # Generate skimr summary and return it as a table
+  output$skim_understat_team_results_table <- renderPrint({
+    data <- understat_team_results()
+    if (!is.null(data)) {
+      skimr::skim(data)
+    } else {
+      "No data available."
+    }
+  })
+  
   # -------- INTERNATIONAL ---------------
   
   # Reactive expression to store World Cup data
@@ -515,6 +525,15 @@ server <- function(input, output, session) {
     }
   )
   
+  # Generate skimr summary and return it as a table
+  output$skim_wc_table <- renderPrint({
+    data <- wc_results()
+    if (!is.null(data)) {
+      skimr::skim(data)
+    } else {
+      "No data available."
+    }
+  })
   
   # Reactive expression to store Euro match data
   euro_results <- eventReactive(input$download_euro_results, {

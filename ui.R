@@ -144,7 +144,7 @@ ui <- dashboardPage(
               box(
                 title = "Player Stats Output Table", 
                 width = 12,
-                status = "primary",
+                status = "purple",
                 solidHeader = TRUE,
                 DT::dataTableOutput("player_stats_table"),
                 downloadButton(
@@ -187,7 +187,8 @@ ui <- dashboardPage(
                  fluidRow(
                    box(
                      title = "Team Match Results Input",
-                     width = 5, status = "primary",
+                     width = 5, 
+                     status = "primary",
                      solidHeader = TRUE,
                      # Input to select country
                      selectInput(
@@ -241,7 +242,7 @@ ui <- dashboardPage(
                   box(
                     title = "Team Match Results Output",
                     width = 12,
-                    status = "primary",
+                    status = "purple",
                     solidHeader = TRUE,
                     DT::dataTableOutput("fbref_team_results_table"),
                     downloadButton(
@@ -262,7 +263,7 @@ ui <- dashboardPage(
           "Summary",
           fluidRow(
             box(
-              title = "Player Stats Output Summary", 
+              title = "Team Match Results Output Summary", 
               width = 12,
               status = "primary",
               solidHeader = TRUE,
@@ -409,7 +410,8 @@ ui <- dashboardPage(
       tabItem(
         tabName = "understat_player",
         tabBox(
-          id = "tabset4", width = 12,
+          id = "tabset4",
+          width = 12,
           tabPanel(
             "Squad Data", 
             fluidRow(
@@ -469,59 +471,78 @@ ui <- dashboardPage(
       # Tab for Understat Matches Results
       tabItem(
         tabName = "understat_matches", 
-        fluidRow(
-          box(
-            title = "Team Match Results Input",
-            width = 4, 
-            status = "primary",
-            solidHeader = TRUE,
-            selectInput(
-              "understat_country",
-              "Select Country",
-              choices = c(
-                "England" = "EPL",
-                "Italy" = "Serie A", 
-                "Spain" = "La liga", 
-                "Germany" = "Bundesliga", 
-                "France" = "Ligue 1",
-                "Russia" = "RFPL"
-              ),
-              selected = "England" # , multiple = TRUE
+        tabBox(
+          id = "tabset5",
+          width = 12,
+          tabPanel(
+            "Matches Data", 
+            fluidRow(
+              box(
+                title = "Team Match Results Input",
+                width = 4, 
+                status = "primary",
+                solidHeader = TRUE,
+                selectInput(
+                  "understat_country",
+                  "Select Country",
+                  choices = c(
+                    "England" = "EPL",
+                    "Italy" = "Serie A", 
+                    "Spain" = "La liga", 
+                    "Germany" = "Bundesliga", 
+                    "France" = "Ligue 1",
+                    "Russia" = "RFPL"
+                  ),
+                  selected = "England" # , multiple = TRUE
+                ),
+                # Input to select the season
+                selectInput(
+                  "understat_season_start_year",
+                  "Select Season",
+                  choices = c(
+                    2012, 2013, 2014, 2015, 2016, 2017,
+                    2018, 2019, 2020, 2021, 2022, 2023,
+                    2024
+                  ),
+                  selected = 2022 
+                ),
+                actionButton(
+                  "download_understat_team_results", 
+                  "Download Team Results", 
+                  icon = icon("fire-flame-curved")
+                )
+              )
             ),
-            # Input to select the season
-            selectInput(
-              "understat_season_start_year",
-              "Select Season",
-              choices = c(
-                2012, 2013, 2014, 2015, 2016, 2017,
-                2018, 2019, 2020, 2021, 2022, 2023,
-                2024
-              ),
-              selected = 2022 
-            ),
-            actionButton(
-              "download_understat_team_results", 
-              "Download Team Results", 
-              icon = icon("fire-flame-curved")
+            fluidRow(
+              box(
+                title = "Team Match Results Output",
+                width = 12, 
+                status = "info",
+                solidHeader = TRUE,
+                DT::dataTableOutput("understat_team_results_table"),
+                downloadButton(
+                  "download_understat_team_csv",
+                  "Download as CSV", 
+                  icon = icon("file-csv")
+                ),
+                downloadButton(
+                  "download_understat_team_xlsx",
+                  "Download as XLSX",
+                  icon = icon("file-excel", lib = "font-awesome")
+                )
+              )
             )
-          )
-        ),
-        fluidRow(
-          box(
-            title = "Team Match Results Output",
-            width = 12, 
-            status = "info",
-            solidHeader = TRUE,
-            DT::dataTableOutput("understat_team_results_table"),
-            downloadButton(
-              "download_understat_team_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            ),
-            downloadButton(
-              "download_understat_team_xlsx",
-              "Download as XLSX",
-              icon = icon("file-excel", lib = "font-awesome")
+          ),
+          tabPanel(
+            "Summary",
+            fluidRow(
+              box(
+                title = "Matches Results Output Summary", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                verbatimTextOutput("skim_understat_team_results_table")
+              )
             )
           )
         )
@@ -560,7 +581,7 @@ ui <- dashboardPage(
           box(
             title = "World Cup Results Output",
             width = 12, 
-            status = "success",
+            status = "maroon",
             solidHeader = TRUE,
             DT::dataTableOutput("wc_results_table"),
             downloadButton(
@@ -606,7 +627,7 @@ ui <- dashboardPage(
           box(
             title = "Euro Results Output",
             width = 12, 
-            status = "success",
+            status = "maroon",
             solidHeader = TRUE,
             DT::dataTableOutput("euro_results_table"),
             downloadButton(
@@ -635,7 +656,46 @@ ui <- dashboardPage(
             status = "primary",
             solidHeader = TRUE,
             collapsible = TRUE,
-            p("I am [Creator's Name], a software developer with experience in creating Shiny applications, data analysis, and R package development.")
+            # CSS styling for the circular image
+            tags$head(tags$style(HTML("
+              .profile-image {
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+              }
+              .description {
+                text-align: left;
+                margin-top: 10px;
+              }
+            "))),
+            # Image with personalized class to make it circular
+            img(src = "logo.jpg", class = "profile-image"),
+            # Line break between the image and the text
+            br(),
+            # Description below the image
+            div(
+              class = "description", 
+              p("Hi, user! I am",
+                strong("Alejandro Navas González"),
+                ", a software developer with experience in building interactive applications using ",
+                strong("Shiny"),
+                " as well as in performing ",
+                strong("data analysis"),
+                " and creating tools for",
+                strong("R developers"),
+                ". I have a passion for leveraging data to create impactful insights, particularly in the sports and biology analytics fields."
+              ),
+              p("In this project, I have developed a Shiny application designed for downloading and analyzing football data. The application leverages the powerful functions from the ",
+                a(href = "https://github.com/JaseZiv/worldfootballR", "worldfootballR package"), 
+                ". This package allows for easy access to football data from various sources such as Transfermarkt, FBref, and Understat, among others. 
+                Special thanks to ", strong("Jase Ziv"), ", the creator of the ", 
+                a(href = "https://github.com/JaseZiv/worldfootballR", "worldfootballR package"), 
+                ", which has been integral to the development of this application. His work makes it simple to extract and analyze a wealth of football-related statistics, enabling developers like me to build valuable tools for the community."
+              )
+            )
           )
         ),
         
@@ -647,6 +707,12 @@ ui <- dashboardPage(
             status = "danger",
             solidHeader = TRUE,
             collapsible = TRUE,
+            p(
+              tags$a(
+                href = "https://buymeacoffee.com/angnar97", 
+                icon("coffee"), " Buy me a Coffee"
+              )
+            ),
             p(
               tags$a(
                 href = "https://twitter.com/angnar7", 
