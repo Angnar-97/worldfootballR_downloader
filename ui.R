@@ -3,7 +3,7 @@ ui <- dashboardPage(
   # ----- Dashboard Header -----
   dashboardHeader(
     title = h3(
-      strong("WorldfootballR Data Downloader"),
+      strong("WorldfootballR - Handler One"),
       align = "center")
     ),
   
