@@ -603,7 +603,7 @@ ui <- dashboardPage(
         tabName = "international_euro", 
         fluidRow(
           box(
-            title = "World Cup Input",
+            title = "Euro Input",
             width = 4, 
             status = "primary",
             solidHeader = TRUE,
@@ -715,7 +715,7 @@ ui <- dashboardPage(
             ),
             p(
               tags$a(
-                href = "https://twitter.com/angnar7", 
+                href = "https://twitter.com/angnar97", 
                 icon("twitter"), " Twitter"
                 )
               ),
