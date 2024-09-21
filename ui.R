@@ -548,51 +548,69 @@ ui <- dashboardPage(
         )
       ),
       
-      
-      
+        
       # Tab for International World Cup Matches Results
       tabItem(
         tabName = "international_wc", 
-        fluidRow(
-          box(
-            title = "World Cup Input",
-            width = 4, 
-            status = "primary",
-            solidHeader = TRUE,
-            # Input to select the season
-            selectInput(
-              "wc_year",
-              "Select World Cup Year",
-              choices = c(
-                2022, 2018, 2014, 2010, 2006, 2002, 1998, 1994, 1990, 1986, 
-                1982, 1978, 1974, 1970, 1966, 1962, 1958, 1954, 1950, 1938, 
-                1934, 1930
-              ),
-              selected = 2010 
+        tabBox(
+          id = "tabset6",
+          width = 12,
+          tabPanel(
+            "World Cup Matches",
+            fluidRow(
+              box(
+                title = "World Cup Input",
+                width = 4, 
+                status = "primary",
+                solidHeader = TRUE,
+                # Input to select the season
+                selectInput(
+                  "wc_year",
+                  "Select World Cup Year",
+                  choices = c(
+                    2022, 2018, 2014, 2010, 2006, 2002, 1998, 1994, 1990, 1986, 
+                    1982, 1978, 1974, 1970, 1966, 1962, 1958, 1954, 1950, 1938, 
+                    1934, 1930
+                  ),
+                  selected = 2010 
+                ),
+                actionButton(
+                  "download_wc_results", 
+                  "Download World Cup Results", 
+                  icon = icon("fire-flame-curved")
+                )
+              )
             ),
-            actionButton(
-              "download_wc_results", 
-              "Download World Cup Results", 
-              icon = icon("fire-flame-curved")
+            fluidRow(
+              box(
+                title = "World Cup Results Output",
+                width = 12, 
+                status = "maroon",
+                solidHeader = TRUE,
+                DT::dataTableOutput("wc_results_table"),
+                downloadButton(
+                  "download_wc_csv",
+                  "Download as CSV", 
+                  icon = icon("file-csv")
+                ),
+                downloadButton(
+                  "download_wc_xlsx",
+                  "Download as XLSX",
+                  icon = icon("file-excel", lib = "font-awesome")
+                )
+              )
             )
-          )
-        ),
-        fluidRow(
-          box(
-            title = "World Cup Results Output",
-            width = 12, 
-            status = "maroon",
-            solidHeader = TRUE,
-            DT::dataTableOutput("wc_results_table"),
-            downloadButton(
-              "download_wc_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            ),
-            downloadButton(
-              "download_wc_xlsx",
-              "Download as XLSX",
-              icon = icon("file-excel", lib = "font-awesome")
+          ),
+          tabPanel(
+            "Summary",
+            fluidRow(
+              box(
+                title = "World Cup Output Summary", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                verbatimTextOutput("skim_wc_table")
+              )
             )
           )
         )
@@ -601,44 +619,63 @@ ui <- dashboardPage(
       # Tab for International World Cup Matches Results
       tabItem(
         tabName = "international_euro", 
-        fluidRow(
-          box(
-            title = "Euro Input",
-            width = 4, 
-            status = "primary",
-            solidHeader = TRUE,
-            # Input to select the season
-            selectInput(
-              "euro_year",
-              "Select Euro Year",
-              choices = c(
-                2024, 2020, 2016, 2012, 2008, 2004, 2000
-              ),
-              selected = 2008 
+        tabBox(
+          id = "tabset6",
+          width = 12,
+          tabPanel(
+            "Euro Cup Matches",
+            fluidRow(
+              box(
+                title = "Euro Input",
+                width = 4, 
+                status = "primary",
+                solidHeader = TRUE,
+                # Input to select the season
+                selectInput(
+                  "euro_year",
+                  "Select Euro Year",
+                  choices = c(
+                    2024, 2020, 2016, 2012, 2008, 2004, 2000
+                  ),
+                  selected = 2008 
+                ),
+                actionButton(
+                  "download_euro_results", 
+                  "Download Euro Results", 
+                  icon = icon("fire-flame-curved")
+                )
+              )
             ),
-            actionButton(
-              "download_euro_results", 
-              "Download Euro Results", 
-              icon = icon("fire-flame-curved")
+            fluidRow(
+              box(
+                title = "Euro Results Output",
+                width = 12, 
+                status = "maroon",
+                solidHeader = TRUE,
+                DT::dataTableOutput("euro_results_table"),
+                downloadButton(
+                  "download_euro_csv",
+                  "Download as CSV", 
+                  icon = icon("file-csv")
+                ),
+                downloadButton(
+                  "download_euro_xlsx",
+                  "Download as XLSX",
+                  icon = icon("file-excel", lib = "font-awesome")
+                )
+              )
             )
-          )
-        ),
-        fluidRow(
-          box(
-            title = "Euro Results Output",
-            width = 12, 
-            status = "maroon",
-            solidHeader = TRUE,
-            DT::dataTableOutput("euro_results_table"),
-            downloadButton(
-              "download_euro_csv",
-              "Download as CSV", 
-              icon = icon("file-csv")
-            ),
-            downloadButton(
-              "download_euro_xlsx",
-              "Download as XLSX",
-              icon = icon("file-excel", lib = "font-awesome")
+          ),
+          tabPanel(
+            "Summary",
+            fluidRow(
+              box(
+                title = "Euro Output Summary", 
+                width = 12,
+                status = "primary",
+                solidHeader = TRUE,
+                verbatimTextOutput("skim_euro_table")
+              )
             )
           )
         )

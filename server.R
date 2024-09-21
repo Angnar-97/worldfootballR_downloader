@@ -33,7 +33,23 @@ server <- function(input, output, session) {
   # Render the player stats data table
   output$player_stats_table <- renderDT({
     req(player_stats_data())
-    datatable(player_stats_data(), options = list(scrollX = TRUE))
+    DT::datatable(
+      player_stats_data(),
+      extensions = 'Buttons',
+      options = list(
+        scrollX = TRUE,
+        pageLength = 5,
+        lengthMenu = c(5, 10, 15, 20),
+        searchHighlight = TRUE,
+        dom = 'lfrtipB',  # Aquí se asegura que los botones se muestren
+        buttons = list(
+          'colvis',
+          'print',
+          'copy',
+          'pdf' # Activa el botón para la visibilidad de las columnas
+        )
+      )
+    )
   })
   
   # Allow users to download player stats data as CSV
@@ -173,7 +189,7 @@ server <- function(input, output, session) {
   })
   
   output$player_info <- renderUI({
-    # Verificar si player_bios_transfermarkt() devuelve NULL
+    # Check if player_bios_transfermarkt() returns NULL
     if (!is.null(player_bios_transfermarkt())) {
       fluidRow(
         box(
@@ -602,5 +618,15 @@ server <- function(input, output, session) {
       write.xlsx(euro_results(), file, row.names = FALSE)
     }
   )
+  
+  # Generate skimr summary and return it as a table
+  output$skim_euro_table <- renderPrint({
+    data <- euro_results()
+    if (!is.null(data)) {
+      skimr::skim(data)
+    } else {
+      "No data available."
+    }
+  })
   
 }
