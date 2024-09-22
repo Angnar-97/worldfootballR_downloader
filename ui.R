@@ -281,57 +281,73 @@ ui <- dashboardPage(
       tabItem(
         tabName = "transfermarkt_player",
         
-        tabBox(id = "tabset3", width = 12,
-               tabPanel(
-                 "Player Bios", 
-                 fluidRow(
-                   box(
-                     title = "Player Bios Input", 
-                     width = 5, 
-                     status = "primary",
-                     solidHeader = TRUE,
-                     textInput(
-                       "player_url_transfermarkt", 
-                       "Player URL",
-                       value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
-                     ),
-                     actionButton(
-                       "download_player_bios_transfermarkt",
-                       "Download Player Bios", 
-                       icon = icon("cloud-download")
-                     )
-                   )
-                 ),
-                 fluidRow(
-                   uiOutput("player_info")
-                 )
-               ),
-               # tabPanel(
-               #   "Player Injury History", 
-               #   fluidRow(
-               #     box(
-               #       title = "Player Injury History", 
-               #       width = 5, 
-               #       status = "primary",
-               #       solidHeader = TRUE,
-               #       textInput(
-               #         "player_url_inj_transfermarkt", 
-               #         "Player URL",
-               #         value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
-               #       ),
-               #       actionButton(
-               #         "download_player_inj_transfermarkt",
-               #         "Download Player Injury History", 
-               #         icon = icon("cloud-download")
-               #       )
-               #     )
-               #   ),
-               #   fluidRow(
-               #     uiOutput("player_inj")
-               #   )
-               # )
+        tabBox(
+          id = "tabset3", width = 12,
+          tabPanel(
+            "Player Bios", 
+            fluidRow(
+              box(
+                title = "Player Bios Input", 
+                width = 5, 
+                status = "primary",
+                solidHeader = TRUE,
+                textInput(
+                  "player_url_transfermarkt", 
+                  "Player URL",
+                  value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
+                ),
+                actionButton(
+                  "download_player_bios_transfermarkt",
+                  "Download Player Bios", 
+                  icon = icon("cloud-download")
+                )
+              )
+            ),
+            fluidRow(
+               uiOutput("player_info")
+            )
+          ),
+          tabPanel(
+            "Player Injury History", 
+            fluidRow(
+              box(
+                title = "Player Injury History", 
+                width = 5, 
+                status = "primary",
+                solidHeader = TRUE,
+                textInput(
+                  "player_url_inj_transfermarkt", 
+                  "Player URL",
+                  value = "https://www.transfermarkt.es/marco-reus/profil/spieler/35207"
+                ),
+                actionButton(
+                  "download_player_inj_transfermarkt",
+                  "Download Player Injury History", 
+                  icon = icon("cloud-download")
+              )
+            )
+          ),
+          fluidRow(
+            box(
+              title = "Injury History Output",
+              width = 12, 
+              status = "danger",
+              solidHeader = TRUE,
+              DT::dataTableOutput("transfermarkt_inj_table"),
+              downloadButton(
+               "transfermarkt_download_inj_csv",
+               "Download as CSV", 
+               icon = icon("file-csv")
+              ),
+              downloadButton(
+               "transfermarkt_download_inj_xlsx",
+               "Download as XLSX",
+               icon = icon("file-excel", lib = "font-awesome")
+              )
+             )
+            )
+          )
         )
-        
       ),
       
       # Tab for Transfermarkt Player Matches
@@ -764,7 +780,7 @@ ui <- dashboardPage(
             ),
             p(
               tags$a(
-              href = "https://github.com/Weimar45", 
+              href = "https://github.com/Angnar-97", 
               icon("github"), " GitHub"
               )
             )

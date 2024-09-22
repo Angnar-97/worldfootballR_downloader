@@ -261,6 +261,66 @@ server <- function(input, output, session) {
     }
   )
   
+  # Reactive expression to store player injury history
+  player_inj_transfermarkt <- eventReactive(input$download_player_inj_transfermarkt, {
+    cat("Button was pressed. Starting to fetch data...\n")
+    isolate({
+      # Validate if the URL provided is valid
+      valid_url <- tryCatch({
+        httr::GET(input$player_url_inj_transfermarkt)
+        TRUE  # If the URL is valid
+      }, error = function(e) {
+        FALSE  # If error occurs, the URL is invalid
+      })
+      
+      if (!valid_url) {
+        shinyalert(
+          title = "Invalid URL",
+          text = "The provided URL is not valid. Please check the URL and try again.",
+          type = "error"
+        )
+        return(NULL)
+      }
+      
+      worldfootballR::tm_player_injury_history(
+        player_url = input$player_url_inj_transfermarkt
+      ) |> mutate(
+        player_name = str_replace_all(
+          player_name, "#[0-9]+|\\n|\\s+", ""
+          ) |> str_trim()
+        ) |> 
+        mutate(
+          player_name = str_replace(
+            player_name, "(?<=[a-z])(?=[A-Z])", " ")
+          )
+    })
+  })
+  
+  # Render the player injury history data table
+  output$transfermarkt_inj_table <- renderDT({
+    req(player_inj_transfermarkt())
+    datatable(player_inj_transfermarkt(), options = list(scrollX = TRUE))
+  })
+  
+  # Allow users to download player injury history data as CSV
+  output$transfermarkt_download_inj_csv <- downloadHandler(
+    filename = function() {
+      paste("player_bios_", formatted_date, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(player_inj_transfermarkt(), file, row.names = FALSE)
+    }
+  )
+  
+  # Allow users to download player injury history data as XLSX
+  output$transfermarkt_download_inj_xlsx <- downloadHandler(
+    filename = function() {
+      paste("player_bios_", formatted_date, ".xlsx", sep = "")
+    },
+    content = function(file) {
+      write.xlsx(player_inj_transfermarkt(), file, row.names = FALSE)
+    }
+  )
   
   # Reactive expression to store match-day data
   matchday_transfermarkt <- eventReactive(input$download_matchday_transfermarkt, {
